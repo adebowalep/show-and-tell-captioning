@@ -56,6 +56,20 @@ class Captioner:
             )
         ])
 
+    def to(self, device: str) -> "Captioner":
+        """Move encoder and decoder to a device (e.g. for ZeroGPU's dynamic GPU attach).
+
+        Args:
+            device: 'cpu' or 'cuda'.
+
+        Returns:
+            self, for chaining.
+        """
+        self.device = device
+        self.encoder.to(device)
+        self.decoder.to(device)
+        return self
+
     def caption_image(
         self,
         image_path: str,

@@ -3,3 +3,4 @@ torchvision>=0.10.0
 pillow>=8.0.0
 numpy>=1.19.0
 gradio>=4.0.0
+spaces>=0.28.0

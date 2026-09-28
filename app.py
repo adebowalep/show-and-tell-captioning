@@ -10,26 +10,42 @@ Deploy: push this repo to a Hugging Face Space (SDK: Gradio). See README
 import os
 
 import gradio as gr
+import torch
 
 from image_captioning import Captioner
+
+try:
+    import spaces
+    GPU = spaces.GPU
+except ImportError:
+    # Not running on a Hugging Face Space (or ZeroGPU not applicable): no-op decorator.
+    def GPU(fn):
+        return fn
 
 ENCODER_PATH = os.environ.get("ENCODER_PATH", "models/encoder-3.pkl")
 DECODER_PATH = os.environ.get("DECODER_PATH", "models/decoder-3.pkl")
 VOCAB_PATH = os.environ.get("VOCAB_PATH", "models/vocab.pkl")
 
 print("Loading model...")
+# Load on CPU: ZeroGPU only attaches a GPU for the duration of a @spaces.GPU call,
+# so the model must start on CPU and move to CUDA inside that call.
 captioner = Captioner(
     encoder_path=ENCODER_PATH,
     decoder_path=DECODER_PATH,
     vocab_path=VOCAB_PATH,
+    device="cpu",
 )
 print("Model loaded.")
 
 
+@GPU
 def generate_caption(image, beam_width, max_len):
     """Gradio callback: save the uploaded image, run the captioner, return text."""
     if image is None:
         return "Please upload an image first."
+
+    if torch.cuda.is_available():
+        captioner.to("cuda")
 
     tmp_path = "/tmp/gradio_input.jpg"
     image.convert("RGB").save(tmp_path)
