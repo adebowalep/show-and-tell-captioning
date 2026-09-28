@@ -24,6 +24,9 @@ dev = [
     "black>=21.0",
     "flake8>=3.9.0",
 ]
+app = [
+    "gradio>=4.0.0",
+]
 
 [project.scripts]
 caption-image = "image_captioning.cli:main"

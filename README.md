@@ -142,6 +142,39 @@ For all options:
 caption-image --help
 ```
 
+## Web Demo
+
+A [Gradio](https://gradio.app) app (`app.py`) provides a browser UI: upload an image,
+adjust beam width / max length, get a caption.
+
+**Run locally:**
+
+```bash
+pip install -e ".[app]"
+python app.py
+```
+
+Then open `http://localhost:7860`.
+
+**Deploy publicly (Hugging Face Spaces, free):**
+
+1. Create a new Space at [huggingface.co/new-space](https://huggingface.co/new-space)
+   — SDK: **Gradio**, hardware: CPU basic (free tier).
+2. Clone the empty Space repo it gives you, then copy in this project's
+   `app.py`, `image_captioning/`, `requirements-app.txt` (renamed to
+   `requirements.txt`), and `models/` (the three `.pkl` files).
+3. Because the model weights are ~125 MB total, track them with Git LFS
+   before committing:
+   ```bash
+   git lfs install
+   git lfs track "*.pkl"
+   git add .gitattributes models/*.pkl app.py image_captioning requirements.txt
+   git commit -m "Add captioning app"
+   git push
+   ```
+4. The Space builds automatically and gives you a public URL like
+   `https://huggingface.co/spaces/<your-username>/show-and-tell-captioning`.
+
 ## Python API
 
 ```python

@@ -6,20 +6,23 @@ from pathlib import Path
 from image_captioning.vocabulary import Vocabulary
 
 
+class MockVocab:
+    """Module-level so it can be pickled (a function-local class cannot)."""
+
+    def __init__(self):
+        self.word2idx = {
+            '<unk>': 0,
+            '<start>': 1,
+            '<end>': 2,
+            'a': 3,
+            'cat': 4,
+            'dog': 5,
+        }
+        self.idx2word = {v: k for k, v in self.word2idx.items()}
+
+
 def create_test_vocab():
     """Helper: create a minimal test vocabulary."""
-    class MockVocab:
-        def __init__(self):
-            self.word2idx = {
-                '<unk>': 0,
-                '<start>': 1,
-                '<end>': 2,
-                'a': 3,
-                'cat': 4,
-                'dog': 5,
-            }
-            self.idx2word = {v: k for k, v in self.word2idx.items()}
-
     return MockVocab()
 
 

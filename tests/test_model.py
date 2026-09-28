@@ -31,7 +31,8 @@ def test_decoder_forward_shape():
 
     outputs = decoder(features, captions)
 
-    assert outputs.shape == (batch_size, seq_len - 1, vocab_size)
+    # features (1 timestep) + captions[:, :-1] (seq_len - 1 timesteps) = seq_len timesteps
+    assert outputs.shape == (batch_size, seq_len, vocab_size)
 
 
 def test_decoder_sample_greedy():
@@ -42,7 +43,7 @@ def test_decoder_sample_greedy():
     max_len = 20
 
     decoder = DecoderRNN(embed_size, hidden_size, vocab_size)
-    features = torch.randn(1, embed_size)
+    features = torch.randn(1, 1, embed_size)  # (batch, seq=1, embed) matches real encoder.forward().unsqueeze(1)
 
     output = decoder.sample(features, max_len=max_len)
 
@@ -60,7 +61,7 @@ def test_decoder_sample_ends_at_eos():
     max_len = 20
 
     decoder = DecoderRNN(embed_size, hidden_size, vocab_size)
-    features = torch.randn(1, embed_size)
+    features = torch.randn(1, 1, embed_size)  # (batch, seq=1, embed) matches real encoder.forward().unsqueeze(1)
 
     output = decoder.sample(features, max_len=max_len)
 
@@ -77,7 +78,7 @@ def test_decoder_sample_beam():
     beam_width = 3
 
     decoder = DecoderRNN(embed_size, hidden_size, vocab_size)
-    features = torch.randn(1, embed_size)
+    features = torch.randn(1, 1, embed_size)  # (batch, seq=1, embed) matches real encoder.forward().unsqueeze(1)
 
     output = decoder.sample_beam(features, max_len=max_len, beam_width=beam_width)
 

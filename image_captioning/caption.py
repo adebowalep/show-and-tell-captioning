@@ -76,7 +76,7 @@ class Captioner:
         image = self.transform(image).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
-            features = self.encoder(image)
+            features = self.encoder(image).unsqueeze(1)
 
         with torch.no_grad():
             if beam_width is not None:

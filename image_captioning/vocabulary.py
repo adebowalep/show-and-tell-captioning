@@ -1,7 +1,35 @@
 """Vocabulary loader for COCO captions."""
 import pickle
+import sys
+import types
 from pathlib import Path
 from typing import Dict
+
+
+def _load_legacy_vocab_object(vocab_file: Path):
+    """Unpickle a vocab.pkl saved by the original Udacity `vocabulary.Vocabulary` class.
+
+    The original class lived in a top-level module named `vocabulary`, so the
+    pickle stream references `vocabulary.Vocabulary` by that module path. That
+    module doesn't exist in this package, so we register a throwaway shim
+    module under that name just long enough to unpickle, then discard it.
+    """
+    class _LegacyVocabulary:
+        pass
+
+    shim = types.ModuleType('vocabulary')
+    shim.Vocabulary = _LegacyVocabulary
+    already_present = 'vocabulary' in sys.modules
+    previous = sys.modules.get('vocabulary')
+    sys.modules['vocabulary'] = shim
+    try:
+        with open(vocab_file, 'rb') as f:
+            return pickle.load(f)
+    finally:
+        if already_present:
+            sys.modules['vocabulary'] = previous
+        else:
+            del sys.modules['vocabulary']
 
 
 class Vocabulary:
@@ -17,8 +45,7 @@ class Vocabulary:
         if not vocab_file.exists():
             raise FileNotFoundError(f"Vocabulary file not found: {vocab_file}")
 
-        with open(vocab_file, 'rb') as f:
-            vocab_obj = pickle.load(f)
+        vocab_obj = _load_legacy_vocab_object(vocab_file)
 
         self.word2idx: Dict[str, int] = vocab_obj.word2idx
         self.idx2word: Dict[int, str] = vocab_obj.idx2word
