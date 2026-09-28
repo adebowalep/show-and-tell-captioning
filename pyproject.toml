@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "image-captioning"
+version = "1.0.0"
+description = "CNN-RNN encoder-decoder for automatic image captioning on COCO dataset"
+authors = [{name = "Suleiman Adebowale", email = "suleimanojo3@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "torch>=1.9.0",
+    "torchvision>=0.10.0",
+    "pillow>=8.0.0",
+    "numpy>=1.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.12.0",
+    "black>=21.0",
+    "flake8>=3.9.0",
+]
+
+[project.scripts]
+caption-image = "image_captioning.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["image_captioning*"]
